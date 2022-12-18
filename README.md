@@ -1,5 +1,5 @@
-# Создание индивидуальной системы достижения пользователя и ее интеграция в пользовательский интерфейс
-Отчет по лабораторной работе #5 выполнил(а):
+# Интеграция рекламных сервисов в интерактивное приложение
+Отчет по лабораторной работе #6 выполнил(а):
 - Паханов Александр Александрович
 - РИ-300018
 
@@ -36,197 +36,19 @@
 - ✨Magic ✨
 
 ## Цель работы
-создание интерактивного приложения с рейтинговой системой пользователя и интеграция игровых сервисов в готовое приложение.
+Cоздание интерактивного приложения с рейтинговой системой пользователя и интеграция игровых сервисов в готовое приложение.
 
 ## Задание 1
 ### Используя видео-материалы практических работ 1-5 повторить реализацию функционала.
 ### Ход работы:
 
-- Практическая работа «Интеграции авторизации с помощью Яндекс SDK»
+- Практическая работа «Интеграция баннерной рекламы»
 
-Для проверки подключения YandexSDK и авторизации пользователя, при необходимости, напишем следующий код:
 
-```C#
-using UnityEngine;
-using YG;
-
-public class CheckConnectYG : MonoBehaviour
-{
-    private void OnEnable() => YandexGame.GetDataEvent += CheckSDK;
-    private void OnDisable() => YandexGame.GetDataEvent -= CheckSDK;
-
-    void Start()
-    {
-        if(YandexGame.SDKEnabled)
-        {
-            CheckSDK();
-        }
-    }
-    
-    public void CheckSDK()
-    {
-        if (YandexGame.auth)
-        {
-            Debug.Log("User auth ok");
-        }
-        else
-        {
-            YandexGame.AuthDialog();
-            Debug.Log("User not auth");
-        }
-    }
-}
-```
-
-Далее создадим пустой объект на сцене под названием YandexManager и прицепим к нему написанный выше скрипт. Теперь на платформе Яндекс Игры, если произойдет успешное подключение к YandexSDK, то будет проверка пользователя на авторизацию. Если она не была воспроизведена ранее, то всплывет окно авторизации. Также в консоль будет выводится состояние авторизации пользователя.
-
-- Практическая работа «Сохранение данных пользователя на платформе Яндекс Игры»
-
-Нам необходимо сохранять данные о количестве очков игрока. Для этого в уже существующий скрипт SavesYG добавим следующее публичное поле:
-
-```C#
-public int score;
-```
-
-Для сохранения прогресса на серверах яндекс и вывода в консоль прогресса, добавим следующие 2 метода в скрипт DragonPicker, т.к. в нем происходит логика проигрыша:
-
-```C#
-public void GetLoadSave()
-{
-    Debug.Log(YandexGame.savesData.score);
-}
-
-public void SaveData(int currentScore)
-{
-    YandexGame.savesData.score = currentScore;
-    YandexGame.SaveProgress();
-}
-```
-
-Будем вызывать эти методы после того, как наше здоровье упадет до 0:
-
-```C#
-if (shieldList.Count == 0)
-{
-    GameObject scoreGO = GameObject.Find("Score");
-    scoreGT = scoreGO.GetComponent<TextMeshProUGUI>();
-    SaveData(int.Parse(scoreGT.text));
-    SceneManager.LoadScene("_0Scene");
-    GetLoadSave();
-}
-```
-
-- Практическая работа «Сбор данных об игроке и вывод их в интерфейсе»
-
-Реализуем систему, в которой мы будем выводить лучший счет игрока в главном меню. Для этого добавим публичное поле в скрипт SavesYG:
-
-```C#
-public int bestScore;
-```
-
-Мы будем обновлять эту переменную в том случае, если текущий счет стал больше лучшего. Для этого в скрипте DragonPicker в методе SaveData допишем следующие строчки кода:
-
-```C#
-if(currentScore > YandexGame.savesData.bestScore)
-{
-    YandexGame.savesData.bestScore = currentScore;
-}
-```
-
-Чтобы значение отображалось, в скрипте CheckConnectYG добавим следующее поле:
-
-```C#
-private TextMeshProUGUI bestScore;
-```
-
-А в метод CheckSDK добавим следующие строчки:
-
-```C#
-bestScore = GameObject.Find("BestScore").GetComponent<TextMeshProUGUI>();
-bestScore.text = "Best score: " + YandexGame.savesData.bestScore.ToString();
-```
-
-На нашей сцене в канвасе создадим TMPro объект с названием "BestStore", где будет выводится наш лучший счет. Главное меню изменилось следующим образом:
 
 ![](/Pics/z1_1.jpg)
 
-Теперь добавим имя игрока над персонажем на игровом поле. Для этого в канвасе создадим TMPro объект с названием "PlayerName", а в скрипт добавим следующее поле:
 
-```C#
-public TextMeshProUGUI playerName;
-```
-
-А в метод GetLoadSave следующие строчки:
-
-```C#
-playerName = GameObject.Find("PlayerName").GetComponent<TextMeshProUGUI>();
-playerName.text = YandexGame.playerName;
-```
-
-Теперь наше игровое поле имеет следующий вид:
-
-![](/Pics/z1_2.jpg)
-
-- Практическая работа «Интеграция таблицы лидеров»
-
-Для того, чтобы лучший результат пользователя заносился в таблицу лидеров, добавим следующую строчку в скрипте DragonPicker, когда у игрока кончаются жизни:
-
-```C#
-YandexGame.NewLeaderboardScores("TopPlayerScore", YandexGame.savesData.bestScore);
-```
-
-На платформе Яндекс Игры в разделе лидербордов добавим новый с техническим названием "TopPlayerScore". Таким образом, наш лидерборд работает.
-
-- Практическая работа «Интеграция системы достижений в проект»
-
-Сделаем в главном меню кнопку с достижениями и само поле для достижений:
-
-![](/Pics/z1_3.jpg)
-
-![](/Pics/z1_4.jpg)
-
-Далее в скрипт SavesYG добавим следующую строчку:
-
-```C#
-public List<string> achievements = new List<string>()
-```
-
-Затем в скрипт CheckConnectYG добавим следующее поле, в котором будет храниться ссылка на TMPro наших достижений:
-
-```C#
-public TextMeshProUGUI achievements;
-```
-
-Затем в окне инспектора мы выберем наш объект, куда записываются достижения. Мы реализуем это таким образом, потому что метод GameObject.Find() не может находить объекты, если они отключены.
-
-Теперь добивим строчки кода, чтобы поле достижений заполнялось теми, которые есть у игрока:
-
-```C#
-if(YandexGame.savesData.achievements.Count == 0)
-{
-
-}
-else
-{
-    foreach(var value in YandexGame.savesData.achievements)
-    {
-        achievements.text = achievements.text + value + '\n';
-    }
-}
-```
-
-В скрипте DragonPicker, когда у нас будут кончаться щиты, будем делать проверку на то, есть ли у игрока достижение на первое поражение. Если нет, то мы его добавляем с помощью следующих строчек:
-
-```C#
-if(!YandexGame.savesData.achievements.Contains("Береги щиты!"))
-{
-    YandexGame.savesData.achievements.Add("Береги щиты!");  
-}    
-```
-
-Теперь тестируем наш код и, при поражении, в окне с достижениями получаем следующий результат:
-
-![](/Pics/z1_5.jpg)
 
 
 ## Задание 2
