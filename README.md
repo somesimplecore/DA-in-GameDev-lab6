@@ -133,7 +133,38 @@ public class ADReward : MonoBehaviour
 ### Добавить в приложение интерфейс для вывода статуса наличия игрока в сети (онлайн или офлайн).
 ### Ход Работы:
 
+Чтобы вывести статус игрока(подключен ли к Яндекс SDK) напишем следующий скрипт:
+```C#
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using YG;
 
+public class OnlineChecker : MonoBehaviour
+{
+    public TextMeshProUGUI statusText;
+    public Image statusImage;
+    void Start()
+    {
+        statusText = GameObject.Find("StatusText").GetComponent<TextMeshProUGUI>();
+        statusImage = GameObject.Find("StatusImage").GetComponent<Image>();
+    }
+
+    void Update()
+    {
+        statusText.text = YandexGame.SDKEnabled ? "Online" : "Offline";
+        statusImage.color = YandexGame.SDKEnabled ? Color.green : Color.red;
+    }
+}
+```
+
+Результат при включенном игровом объекте YandexGame:
+
+![](/Pics/z2_1.jpg)
+
+Результат при выключенном YandexGame(ситуация схожа с тем, если бы игрок не был онлайн):
+
+![](/Pics/z2_2.jpg)
 
 ## Задание 3
 ### Доработать стилистическое оформление списка лидеров и системы достижений, реализованных в задании 1.
