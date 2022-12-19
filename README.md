@@ -70,6 +70,47 @@ YandexGame.RewVideoShow(0);
 
 - Практическая работа «Показ видеорекламы пользователю за вознаграждение»
 
+Для показа видеорекламы за вознаграждение, создадим скрипт ADReward и присоединим его к объекту YandexManager. Сам скрипт:
+
+```C#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using YG;
+
+public class ADReward : MonoBehaviour
+{
+    private void OnEnable() => YandexGame.CloseVideoEvent += Rewarded;
+
+    private void OnDisable() => YandexGame.CloseVideoEvent -= Rewarded;
+
+    void Rewarded(int id)
+    {
+        if(id == 1)
+        {
+            Debug.Log("Пользователь получил награду");
+        }
+        else
+        {
+            Debug.Log("Пользователь не получил награду");
+        }
+    }
+
+    public void OpenAD()
+    {
+        YandexGame.RewVideoShow(Random.Range(0, 2));
+    }
+}
+```
+
+Создадим кнопку, с помощью которой мы сможем вызывать данный вид рекламы, и присоединим к ней функцию OpenAD из скрипта выше. Главное меню выглядит следующим образом:
+
+![](/Pics/z1_4.jpg)
+
+Теперь мы можем просматривать рекламу за вознаграждение по нажатию кнопки в главном меню.
+
+- Практическая работа «Создание внутриигрового магазина»
+
 
 
 
