@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace YG
 {
@@ -14,5 +15,6 @@ namespace YG
         public int score;
         public int bestScore;
         public List<string> achievements = new List<string>();
+        public DateTime lastPlayedTime;
     }
 }
